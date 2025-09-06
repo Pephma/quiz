@@ -34,3 +34,61 @@ def test_create_choice():
     assert len(question.choices) == 1
     assert choice.text == 'a'
     assert not choice.is_correct
+
+# ============================
+
+def test_question_with_multiple_choices():
+    q = Question(title="Capital of France?")
+    q.add_choice("Paris", True)
+    q.add_choice("London", False)
+    q.add_choice("Berlin", False)
+    assert len(q.choices) == 3
+    assert any(c.is_correct for c in q.choices)
+    assert sum(c.is_correct for c in q.choices) == 1
+
+def test_question_points_default():
+    q = Question(title="Test points default")
+    assert q.points == 1
+
+def test_question_with_negative_points():
+    with pytest.raises(Exception):
+        Question(title="Invalid points", points=-10)
+
+def test_choice_text_cannot_be_empty():
+    q = Question(title="Empty choice test")
+    with pytest.raises(Exception):
+        q.add_choice("", False)
+
+def test_choice_text_cannot_be_too_long():
+    q = Question(title="Too long choice test")
+    with pytest.raises(Exception):
+        q.add_choice("a" * 500, False)
+
+def test_question_without_choices():
+    q = Question(title="No choices yet")
+    assert q.choices == []
+
+def test_question_with_multiple_correct_choices():
+    q = Question(title="Multiple correct answers")
+    q.add_choice("Answer1", True)
+    q.add_choice("Answer2", True)
+    assert sum(c.is_correct for c in q.choices) == 2
+
+def test_choices_are_linked_to_question():
+    q = Question(title="Link test")
+    q.add_choice("Option", True)
+    assert q.choices[0] in q.choices
+
+def test_different_questions_have_independent_choices():
+    q1 = Question(title="Q1")
+    q2 = Question(title="Q2")
+    q1.add_choice("Yes", True)
+    q2.add_choice("No", False)
+    assert len(q1.choices) == 1
+    assert len(q2.choices) == 1
+    assert q1.choices[0].text == "Yes"
+    assert q2.choices[0].text == "No"
+
+def test_question_title_is_stored_correctly():
+    q = Question(title="Custom title")
+    assert q.title == "Custom title"
