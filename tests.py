@@ -92,3 +92,19 @@ def test_different_questions_have_independent_choices():
 def test_question_title_is_stored_correctly():
     q = Question(title="Custom title")
     assert q.title == "Custom title"
+
+# ============================
+
+@pytest.fixture
+def sample_question():
+    q = Question(title="2 + 2 = ?")
+    q.add_choice("3", False)
+    q.add_choice("4", True)
+    q.add_choice("5", False)
+    return q
+
+def test_fixture_question_has_correct_choice(sample_question):
+    assert any(c.is_correct for c in sample_question.choices)
+
+def test_fixture_question_choices_count(sample_question):
+    assert len(sample_question.choices) == 3
